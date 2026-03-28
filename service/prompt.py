@@ -1,6 +1,7 @@
 import os
-from google import genai  # new package
-from typing import List, Dict
+from google import genai
+from typing import List, Dict, Optional
+
 
 class GeminiService:
     def __init__(self):
@@ -11,20 +12,32 @@ class GeminiService:
         self.client = genai.Client(api_key=api_key)
         self.model_name = os.getenv("MODEL_NAME", "models/gemini-2.5-flash")
 
-    def build_prompt(self, system_prompt: str, user_input: str, history: List[Dict] = None) -> str:
-        prompt = ""
-        if system_prompt:
-            prompt += f"System: {system_prompt}\n\n"
+        self.system_prompt = (
+            "You must answer in maximum 30 words. The answer must be clean and concise."
+        )
+
+    def build_prompt(
+        self,
+        user_input: str,
+        history: Optional[List[Dict]] = None
+    ) -> str:
+        prompt = f"System: {self.system_prompt}\n\n"
+
         if history:
             for msg in history:
-                role = msg["role"]
-                content = msg["content"]
+                role = msg.get("role", "")
+                content = msg.get("content", "")
                 prompt += f"{role.capitalize()}: {content}\n"
+
         prompt += f"User: {user_input}\nAssistant:"
         return prompt
 
-    def generate_response(self, user_input: str, system_prompt: str = "", history=None) -> str:
-        prompt = self.build_prompt(system_prompt, user_input, history)
+    def generate_response(
+        self,
+        user_input: str,
+        history: Optional[List[Dict]] = None
+    ) -> str:
+        prompt = self.build_prompt(user_input, history)
 
         response = self.client.models.generate_content(
             model=self.model_name,

@@ -29,11 +29,11 @@ def home():
 @app.post("/chat")
 def chat(req: ChatRequest):
     if ai_service is None:
-        raise HTTPException(status_code=500, detail=f"Service unavailable: {startup_error}")
+        raise HTTPException(status_code=500, detail=f"Ծառայությունը հասանելի չէ: {startup_error}")
 
     try:
         response = ai_service.generate_response(req.message)
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Failed to generate response: {exc}") from exc
+        raise HTTPException(status_code=500, detail=f"Պատասխան գեներացնելը ձախողվել է: {exc}") from exc
 
     return {"response": response}
