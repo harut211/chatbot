@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+python-dotenv
+google-genai
+Django>=4.2
+mysqlclient
+djangorestframework  
+python-dotenv
