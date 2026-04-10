@@ -10,7 +10,14 @@ DEFAULT_SYSTEM_PROMPT = (
 
 
 class GeminiService:
-    
+    """Lightweight wrapper around Google Gemini for text generation.
+
+    Exposes:
+      - build_prompt: construct a simple chat-style prompt
+      - generate_response: call the model and return plain text
+      - build_grounded_prompt: construct a DB-grounded assistant prompt
+    """
+
     def __init__(self) -> None:
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:

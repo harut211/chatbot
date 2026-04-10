@@ -10,7 +10,6 @@ DEFAULT_SYSTEM_PROMPT = (
 
 
 class GeminiService:
-    
     def __init__(self) -> None:
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:

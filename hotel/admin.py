@@ -2,6 +2,10 @@ from django.contrib import admin
 
 from .models import Reservation, Room
 
+admin.site.site_header = "Հյուրանոցի կառավարման վահանակ"
+admin.site.site_title = "Ադմինիստրատորի վահանակ"
+admin.site.index_title = "Կառավարում"
+
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
