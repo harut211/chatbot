@@ -6,6 +6,7 @@ class Room(models.Model):
     room_type = models.CharField("Սենյակի տեսակ", max_length=50)
     capacity = models.PositiveIntegerField("Տարողություն", default=2)
     price_per_night = models.DecimalField("Գին մեկ գիշերվա համար", max_digits=10, decimal_places=2)
+    image = models.ImageField("Սենյակի լուսանկար", upload_to="rooms/", blank=True, null=True)
     is_available = models.BooleanField("Հասանելի է", default=True)
 
     def __str__(self):

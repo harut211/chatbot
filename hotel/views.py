@@ -4,7 +4,7 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
 from service.prompt import GeminiService
@@ -24,13 +24,20 @@ def home(request):
     room_qs = Room.objects.filter(is_available=True).order_by("price_per_night")
     rooms = [
         {
+            "room_number": room.room_number,
             "name": f"{room.room_type} (Room {room.room_number})",
             "price": f"${room.price_per_night}/night",
             "desc": f"Capacity: {room.capacity} guests",
+            "image_url": room.image.url if room.image else None,
         }
         for room in room_qs
     ]
     return render(request, "hotel/index.html", {"rooms": rooms})
+
+
+def room_detail(request, room_number: str):
+    room = get_object_or_404(Room, room_number=room_number)
+    return render(request, "hotel/room.html", {"room": room})
 
 
 def _detect_language(message: str) -> str:

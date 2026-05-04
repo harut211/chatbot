@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Հյուրանոցի կայք AI օգնականով</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script
+  src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.10/dist/dotlottie-wc.js"
+  type="module"
+></script>
   <style>
     body {
       min-height: 100vh;
@@ -38,20 +42,80 @@
       background: #fff;
       padding: 1rem;
     }
+    .chat{
+      display: none;
+    }
+    .chat.active {
+      display: block;
+      position: fixed;
+      z-index: 1050;
+      width: 100%;
+      top: 30px;
+
+    }
     .msg { margin-bottom: .75rem; }
+    .chatbot {
+      position: fixed;
+      bottom: 60px;
+      right: 20px;
+      z-index: 1050;
+      cursor: pointer;
+    }
+    .chatbot.active {
+      display: none;
+    }
+    .service-card {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+    }
+    .service-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .service-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    .service-card-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .room-card-img {
+      height: 220px;
+      object-fit: cover;
+      border-top-left-radius: .5rem;
+      border-top-right-radius: .5rem;
+      width: 100%;
+    }
+    .room-card-title {
+      min-height: 4.5rem;
+    }
+    .chatbot.active {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <div class="container py-4 py-md-5">
-    <div class="hero mb-4 text-center">
-      <h1 class="h3 mb-2">Բարի գալուստ Horizon հյուրանոց</h1>
-      <p class="mb-0">Խորհրդակցեք և սենյակներ ամրագրեք մեր հյուրանոցում՝ մեր արհեստական ինտելեկտի օգնությամբ։</p>
+  <header class="position-fixed top-0 start-0 w-100" style="z-index: 1030;">
+    <div class=" bg-dark bg-opacity-75 text-center d-flex justify-content-between align-items-center py-3 px-4">
+      <h1 class="h2 mb-0 d-flex justify-start">HotelLux</h1>
+      <ul class="list-inline mb-0">
+        <li class="list-inline-item"><a href="#" class="text-decoration-none text-light">Գլխավոր</a></li>
+        <li class="list-inline-item"><a href="#" class="text-decoration-none text-light">Սենյակներ</a></li>
+        <li class="list-inline-item"><a href="#about" class="text-decoration-none text-light">Մեր մասին</a></li>
+        <li class="list-inline-item" id="contactLink"><a href="#footer" class="text-decoration-none text-light">Կոնտակտներ</a></li>
+      </ul>
     </div>
-
+  </header>
+  <div class="chat py-4 py-md-5">
     <div class="row justify-content-center">
       <div class="col-lg-8 col-xl-7">
         <div class="card shadow chat-card">
-          <div class="card-header fw-semibold">AI օգնական</div>
+          <div class="card-header d-flex justify-content-between align-items-center fw-semibold">
+            <span>AI օգնական</span>
+            <button id="chatCloseBtn" class="btn btn-sm btn-outline-secondary" type="button">×</button>
+          </div>
           <div class="card-body">
             <div id="chatBox" class="chat-box mb-3"></div>
             <form id="chatForm" class="row g-2">
@@ -68,14 +132,135 @@
       </div>
     </div>
   </div>
+<dotlottie-wc
+  src="https://lottie.host/b8fe5d6c-1391-4592-8a0f-36f20000495c/07f1HDnVYs.lottie"
+  style="width: 300px;height: 300px"
+  autoplay
+  loop
+  class="chatbot"  ></dotlottie-wc>
+<section class="container py-7" style="padding-top: 70px; padding-bottom: 60px" id="rooms">
+  <div class="text-center mb-5">
+    <h2 class="mb-4 text-light">Ներկայում առաջարկվող սենյակներ</h2>
+    <p class="text-light mb-4">Ընտրեք սենյակը և դիտեք մանրամասները</p>
+  </div>
+  <div class="row g-4 mb-5">
+    {% if rooms %}
+      {% for room in rooms %}
+        <div class="col-lg-4 col-md-6">
+          <a href="{% url 'room_detail' room.room_number %}" class="text-decoration-none">
+            <div class="card hero h-100 text-white">
+              {% if room.image_url %}
+                <img src="{{ room.image_url }}" alt="{{ room.name }}" class="room-card-img">
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title room-card-title">{{ room.name }}</h5>
+                <p class="card-text mb-2">{{ room.desc }}</p>
+                <p class="card-text fw-semibold">{{ room.price }}</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-12">
+        <div class="alert alert-light text-dark">Այս պահին հասանելի սենյակներ չկան։</div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+<section class="container  py-7" style="padding-bottom:60px" id="about">
+  <div class="text-center mb-5">
+    <h2 class="mb-4 text-light">Մեր ծառայություններ</h2>
+  </div>
+  <div class="row g-4 mb-4">
+    <div class="col-lg-4 col-md-6">
+      <div class="card hero h-100 text-center service-card" data-delay="0">
+        <div class="card-body">
+          <div class="service-card-icon">🛏️</div>
+          <h5 class="card-title text-light">Հարմար Սենյակներ</h5>
+          <p class="card-text text-light">Ժամանակակից և հարմարավետ սենյակներ ամեն ճաշակի համար։</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+      <div class="card hero h-100 text-center service-card" data-delay="100">
+        <div class="card-body">
+          <div class="service-card-icon">🍽️</div>
+          <h5 class="card-title text-light">Սնունդ</h5>
+          <p class="card-text text-light">Անվճար նախաճաշ և ընթրիք</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+      <div class="card hero h-100 text-center service-card" data-delay="200">
+        <div class="card-body">
+          <div class="service-card-icon">🏊</div>
+          <h5 class="card-title text-light">Լողավազան</h5>
+          <p class="card-text text-light">Հանգստացեք մեր հիանալի լողավազանում։</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-4 col-md-6">
+      <div class="card hero h-100 text-center service-card" data-delay="300">
+        <div class="card-body">
+          <div class="service-card-icon">🧖</div>
+          <h5 class="card-title text-light">Սպա ծառայություններ</h5>
+          <p class="card-text text-light">Վերականգնեք ձեր էներգիան մեր սպա կենտրոնում։</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+      <div class="card hero h-100 text-center service-card" data-delay="400">
+        <div class="card-body">
+          <div class="service-card-icon">🎵</div>
+          <h5 class="card-title text-light">Հյուրերի Ընդունման Կենտրոն</h5>
+          <p class="card-text text-light">24/7 աջակցություն ձեր անհրաժեշտությունների համար։</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+      <div class="card hero h-100 text-center service-card" data-delay="500">
+        <div class="card-body">
+          <div class="service-card-icon">🚗</div>
+          <h5 class="card-title text-light">Անվճար կայանատեղի</h5>
+          <p class="card-text text-light">Անվճար և անսահման կայանատեղի բոլոր հյուրերի համար։</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<footer id="footer" class="position-fixed bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-center text-light py-3">
+    <div class="d-flex justify-content-between px-4 align-items-center gap-3 flex-wrap">
+      <p class="mb-0">&copy; 2024 Horizon հյուրանոց. Բոլոր իրավունքները պաշտպանված են.</p>
+      <div>
+        <a href="tel:+374 12 345 678" class="text-decoration-none text-light pe-3">+374 12 345 678</a>
+        <a href="mailto: info@horizonhotel.com" class="text-decoration-none text-light">info@horizonhotel.com</a>
+      </div>
+    </div>
+</footer>
   <script>
     const chatForm = document.getElementById("chatForm");
     const messageInput = document.getElementById("messageInput");
     const chatBox = document.getElementById("chatBox");
     const sendBtn = document.getElementById("sendBtn");
     const statusText = document.getElementById("statusText");
+    const chatToggle = document.querySelector(".chatbot");
+    const chatCloseBtn = document.getElementById("chatCloseBtn");
 
+    chatToggle.addEventListener("click", () => {
+      const chatSection = document.querySelector(".chat");
+      chatSection.classList.toggle("active");
+      chatToggle.classList.toggle("active");
+    });
+
+    chatCloseBtn.addEventListener("click", () => {
+      const chatSection = document.querySelector(".chat");
+      chatSection.classList.remove("active");
+      chatToggle.classList.remove("active");
+    });
     function addMessage(role, text) {
       const el = document.createElement("div");
       el.className = "msg";
@@ -114,6 +299,22 @@
         sendBtn.disabled = false;
       }
     });
+
+    const serviceCards = document.querySelectorAll('.service-card');
+    const cardObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const card = entry.target;
+        const delay = parseInt(card.dataset.delay || '0', 10);
+        card.style.transitionDelay = `${delay}ms`;
+        card.classList.add('visible');
+        cardObserver.unobserve(card);
+      });
+    }, {
+      threshold: 0.2,
+    });
+
+    serviceCards.forEach(card => cardObserver.observe(card));
   </script>
 </body>
 </html>
