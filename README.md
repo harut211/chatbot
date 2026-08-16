@@ -296,4 +296,5 @@ When booking succeeds:
 - a `Reservation` record is created
 - selected room is marked unavailable (`is_available=False`)
 
-If data is missing, assistant asks for missing fields.
+If data is missing, assistant asks for missing fields.ssss
+
